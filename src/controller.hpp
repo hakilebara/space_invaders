@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 
 #include "player.hpp"
+#include "bullet.hpp"
 
 class Controller {
   public:

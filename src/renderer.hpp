@@ -12,7 +12,7 @@ class Renderer {
       const std::size_t grid_width, const std::size_t grid_height); 
    ~Renderer();
 
-   void Render(Player const player, std::vector <Invader> &invaders, int invader_move_counter);
+   void Render(Player const &player, std::vector <Invader> &invaders, int invader_move_counter);
    void UpdateWindowTitle(int scrore, int fps);
 
   private:

@@ -15,6 +15,9 @@ void Controller::HandleInput(bool &running, Player &player) {
             key_right_pressed = true;
             player.velocity = 2;
             break;
+          case SDLK_SPACE:
+            player.shoot();
+            break;
           default:
             break;
         }

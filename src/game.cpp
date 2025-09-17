@@ -6,7 +6,7 @@
 Game::Game(std::size_t grid_width, std::size_t grid_height) :
   grid_width(grid_width),
   grid_height(grid_height),
-  player(PLAYER_STARTING_X, grid_height - 2 * SHIP_HEIGHT) { 
+  player(PLAYER_STARTING_X, grid_height - 2 * SHIP_HEIGHT) {
 
   for (int row = 0; row < INVADER_ROWS; ++row) {
     float y = row * SHIP_HEIGHT * 1.5;
@@ -18,7 +18,7 @@ Game::Game(std::size_t grid_width, std::size_t grid_height) :
   }
 }
 
-void Game::Run(Controller &controller, Renderer &renderer, std::size_t target_frame_duration) { 
+void Game::Run(Controller &controller, Renderer &renderer, std::size_t target_frame_duration) {
   Uint32 title_timestamp = SDL_GetTicks();
   Uint32 frame_start;
   Uint32 frame_end;
@@ -32,7 +32,7 @@ void Game::Run(Controller &controller, Renderer &renderer, std::size_t target_fr
     // Input, Update, Render - the main game loop
     controller.HandleInput(running, player);
     Update();
-    
+
     // Render
     renderer.Render(player, invaders, invader_move_counter);
 
@@ -67,7 +67,7 @@ void Game::Update() {
 
   if (invader_frame_counter % invader_frame_delay == 0) {
     bool out_of_bound = std::any_of(invaders.begin(), invaders.end(),
-        [&](Invader i) { return (i.x <= 0 || i.x >= grid_width - i.width); } ); 
+        [&](Invader i) { return (i.x <= 0 || i.x >= grid_width - i.width); } );
 
     if (out_of_bound) {
       if (!dont_move) {
@@ -86,5 +86,20 @@ void Game::Update() {
     }
   }
   ++invader_frame_counter;
+
+  if (player.bullet) {
+    player.bullet->Move();
+    for (Invader &i : invaders) {
+      bool hit =
+        !i.dead &&
+        (player.bullet->x >= i.x && player.bullet->x <= i.x + i.width) &&
+        (player.bullet->y >= i.y && player.bullet->y <= i.y + i.height);
+      if (hit) {
+        i.dead = true;
+        player.bullet = nullptr;
+        break;
+      }
+    }
+  }
 }
 int Game::GetScore() const { return score; }

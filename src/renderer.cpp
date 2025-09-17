@@ -40,7 +40,7 @@ Renderer::~Renderer() {
   SDL_Quit();
 }
 
-void Renderer::Render(Player const player, std::vector <Invader> &invaders, int invader_move_counter) {
+void Renderer::Render(Player const &player, std::vector <Invader> &invaders, int invader_move_counter) {
   // Clear screen
   SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E, 0xFF);
   SDL_RenderClear(sdl_renderer);
@@ -51,13 +51,24 @@ void Renderer::Render(Player const player, std::vector <Invader> &invaders, int 
 
   // Render invaders' fleet
   SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-  for (Invader invader : invaders) {
+  for (Invader const &invader : invaders) {
+    if (invader.dead) continue;
     uint8_t const *pixels = (invader_move_counter % 2 == 0)
       ? invader.sprite_crab_frame1
       : invader.sprite_crab_frame2;
     RenderPixels(invader.x, invader.y, pixels, invader.width);
   }
 
+  if (player.bullet) {
+    SDL_Rect block;
+    block.w = block_width;
+    block.h = block_height * 4;
+
+    block.x = player.bullet->x * block_width;
+    block.y = player.bullet->y * block_height;
+
+    SDL_RenderFillRect(sdl_renderer, &block);
+  }
 
   // Update Screen
   SDL_RenderPresent(sdl_renderer);
