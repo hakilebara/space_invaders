@@ -40,10 +40,20 @@ Renderer::~Renderer() {
   SDL_Quit();
 }
 
-void Renderer::Render(Player const &player, std::vector <Invader> &invaders, int invader_move_counter) {
+void Renderer::Render(Player const &player, std::vector <Invader> &invaders, int invader_move_counter, GAME_STATE game_state) {
   // Clear screen
   SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E, 0xFF);
   SDL_RenderClear(sdl_renderer);
+
+  if (game_state == GAME_STATE::WON) {
+    SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0xFF, 0x00, 0xFF);
+    Renderer::RenderGameOver();
+  }
+
+  if (game_state == GAME_STATE::LOST) {
+    SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);
+    Renderer::RenderGameOver();
+  }
 
   // Render player
   SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0xFF, 0x00, 0xFF);
@@ -52,7 +62,6 @@ void Renderer::Render(Player const &player, std::vector <Invader> &invaders, int
   // Render invaders' fleet
   SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
   for (Invader const &invader : invaders) {
-    if (invader.dead) continue;
     uint8_t const *pixels = (invader_move_counter % 2 == 0)
       ? invader.sprite_crab_frame1
       : invader.sprite_crab_frame2;
@@ -77,6 +86,21 @@ void Renderer::Render(Player const &player, std::vector <Invader> &invaders, int
 void Renderer::UpdateWindowTitle(int score, int fps) {
   std::string title("Space Invaders Score: " + std::to_string(score) + " FPS: " + std::to_string(fps));
   SDL_SetWindowTitle(sdl_window, title.c_str());
+}
+
+void Renderer::RenderGameOver() {
+    uint8_t const g[8] = { 0x00, 0x3C, 0x42, 0x82, 0x92, 0x72, 0x00, 0x00 };
+    uint8_t const a[8] = { 0x00, 0xF8, 0x24, 0x22, 0x24, 0xF8, 0x00, 0x00 };
+    uint8_t const m[8] = { 0x00, 0xFE, 0x04, 0x18, 0x04, 0xFE, 0x00, 0x00 };
+    uint8_t const e[8] = { 0x00, 0xFE, 0x92, 0x92, 0x92, 0x82, 0x00, 0x00 };
+    uint8_t const _[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    uint8_t const o[8] = { 0x00, 0x7C, 0x82, 0x82, 0x82, 0x7C, 0x00, 0x00 };
+    uint8_t const v[8] = { 0x00, 0x3E, 0x40, 0x80, 0x40, 0x3E, 0x00, 0x00 };
+    uint8_t const r[8] = { 0x00, 0xFE, 0x12, 0x32, 0x52, 0x8C, 0x00, 0x00 };
+    uint8_t const *game_over[9] = { g, a, m, e, _, o, v, e, r};
+    for (int i = 0; i < 9; ++i) {
+      RenderPixels(10 + i * 8, grid_height/2, game_over[i], 8);
+    }
 }
 
 void Renderer::RenderPixels(int x, int y, uint8_t const *pixels, std::size_t size) {

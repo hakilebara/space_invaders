@@ -4,6 +4,7 @@
 #include "bullet.hpp"
 #include "ship.hpp"
 #include <memory>
+#include <optional>
 
 #define PLAYER_STARTING_X 13
 #define PLAYER_WIDTH 13
@@ -14,10 +15,11 @@ class Player : public Ship {
      width = PLAYER_WIDTH;
    }
    void shoot() {
-     this->bullet = std::unique_ptr<Bullet>(new Bullet (x+6, y)); // TODO: Magic value
+     if (!bullet)
+       bullet.emplace(x+6, y);
    }
    uint8_t const sprite_player_frame1[PLAYER_WIDTH] = { 0xF0, 0xF8, 0xF8, 0xF8, 0xF8, 0xFE, 0xFF, 0xFE, 0xF8, 0xF8, 0xF8, 0xF8, 0xF0 };
-   std::unique_ptr<Bullet> bullet = nullptr;
+   std::optional<Bullet> bullet;
 };
 
 #endif

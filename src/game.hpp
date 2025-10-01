@@ -1,11 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <random>
 #include <vector>
 #include "SDL.h"
-#include "renderer.hpp"
-#include "controller.hpp"
 #include "player.hpp"
 #include "invader.hpp"
 
@@ -13,6 +10,10 @@
 #define INVADER_ROWS 5
 #define SHIP_HEIGHT 8
 
+class Renderer;
+class Controller;
+
+enum class GAME_STATE { RUNNING, LOST, WON };
 class Game {
   public:
    Game(std::size_t grid_width, std::size_t grid_height);
@@ -29,9 +30,9 @@ class Game {
    std::vector <Invader> invaders;
    int invader_frame_counter = 0;
    int invader_move_counter = 0;
-   int invader_frame_delay = 40;
-
+   int invader_frame_delay = 20;
    int score{0};
+   GAME_STATE state = GAME_STATE::RUNNING;
    void Update();
 };
 

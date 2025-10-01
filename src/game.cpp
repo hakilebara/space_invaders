@@ -1,13 +1,14 @@
 #include "game.hpp"
 #include <iostream>
 #include <algorithm>
+#include "renderer.hpp"
+#include "controller.hpp"
 
 
 Game::Game(std::size_t grid_width, std::size_t grid_height) :
   grid_width(grid_width),
   grid_height(grid_height),
   player(PLAYER_STARTING_X, grid_height - 2 * SHIP_HEIGHT) {
-
   for (int row = 0; row < INVADER_ROWS; ++row) {
     float y = row * SHIP_HEIGHT * 1.5;
     for (float j = 0; j < INVADER_NB/INVADER_ROWS; ++j) {
@@ -31,10 +32,12 @@ void Game::Run(Controller &controller, Renderer &renderer, std::size_t target_fr
 
     // Input, Update, Render - the main game loop
     controller.HandleInput(running, player);
-    Update();
+    if (state != GAME_STATE::LOST) {
+      Update();
+    }
 
     // Render
-    renderer.Render(player, invaders, invader_move_counter);
+    renderer.Render(player, invaders, invader_move_counter, state);
 
     frame_end = SDL_GetTicks();
 
@@ -67,7 +70,7 @@ void Game::Update() {
 
   if (invader_frame_counter % invader_frame_delay == 0) {
     bool out_of_bound = std::any_of(invaders.begin(), invaders.end(),
-        [&](Invader i) { return (i.x <= 0 || i.x >= grid_width - i.width); } );
+        [&](Invader i) { return i.x <= 0 || i.x >= grid_width - i.width; } );
 
     if (out_of_bound) {
       if (!dont_move) {
@@ -87,8 +90,16 @@ void Game::Update() {
   }
   ++invader_frame_counter;
 
+  bool player_hit = std::any_of(invaders.begin(), invaders.end(), [&](Invader i) { return i.y >= player.y; });
+  if (player_hit) {
+    state = GAME_STATE::LOST;
+  }
+
   if (player.bullet) {
     player.bullet->Move();
+    if (player.bullet->y < 0) {
+      player.bullet.reset();
+    }
     for (Invader &i : invaders) {
       bool hit =
         !i.dead &&
@@ -96,9 +107,20 @@ void Game::Update() {
         (player.bullet->y >= i.y && player.bullet->y <= i.y + i.height);
       if (hit) {
         i.dead = true;
-        player.bullet = nullptr;
+        score+=10;
+        player.bullet.reset();
         break;
       }
+    }
+
+    invaders.erase(
+      std::remove_if(invaders.begin(), invaders.end(),
+                     [](const Invader& i){ return i.dead; }),
+      invaders.end()
+    );
+
+    if (invaders.empty()) {
+      state = GAME_STATE::WON;
     }
   }
 }
