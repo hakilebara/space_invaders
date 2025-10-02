@@ -6,7 +6,7 @@
 
 class Controller {
   public:
-   void HandleInput(bool &running, Player &player);
+   void HandleInput(bool &running, std::unique_ptr<Player> &player);
 
   private:
    bool key_left_pressed = false;

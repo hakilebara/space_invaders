@@ -7,8 +7,9 @@
 
 Game::Game(std::size_t grid_width, std::size_t grid_height) :
   grid_width(grid_width),
-  grid_height(grid_height),
-  player(PLAYER_STARTING_X, grid_height - 2 * SHIP_HEIGHT) {
+  grid_height(grid_height) {
+  // player(PLAYER_STARTING_X, grid_height - 2 * SHIP_HEIGHT) {
+  player = std::make_unique<Player>(PLAYER_STARTING_X, grid_height - 2 * SHIP_HEIGHT);
   for (int row = 0; row < INVADER_ROWS; ++row) {
     float y = row * SHIP_HEIGHT * 1.5;
     for (float j = 0; j < INVADER_NB/INVADER_ROWS; ++j) {
@@ -66,7 +67,7 @@ void Game::Run(Controller &controller, Renderer &renderer, std::size_t target_fr
 bool dont_move = false;
 
 void Game::Update() {
-  player.Move(grid_width);
+  player->Move(grid_width);
 
   if (invader_frame_counter % invader_frame_delay == 0) {
     bool out_of_bound = std::any_of(invaders.begin(), invaders.end(),
@@ -79,7 +80,10 @@ void Game::Update() {
           i.velocity *= -1; // Change invaders' direction by flipping their velocity sign
          }
          dont_move = true;
-      } else dont_move = false;
+      }
+      else {
+        dont_move = false;
+      }
     }
     if (!dont_move) {
       for (Invader &i : invaders) {
@@ -90,25 +94,25 @@ void Game::Update() {
   }
   ++invader_frame_counter;
 
-  bool player_hit = std::any_of(invaders.begin(), invaders.end(), [&](Invader i) { return i.y >= player.y; });
+  bool player_hit = std::any_of(invaders.begin(), invaders.end(), [&](Invader i) { return i.y >= player->y; });
   if (player_hit) {
     state = GAME_STATE::LOST;
   }
 
-  if (player.bullet) {
-    player.bullet->Move();
-    if (player.bullet->y < 0) {
-      player.bullet.reset();
+  if (player->bullet) {
+    player->bullet->Move();
+    if (player->bullet->y < 0) {
+      player->bullet.reset();
     }
     for (Invader &i : invaders) {
       bool hit =
         !i.dead &&
-        (player.bullet->x >= i.x && player.bullet->x <= i.x + i.width) &&
-        (player.bullet->y >= i.y && player.bullet->y <= i.y + i.height);
+        (player->bullet->x >= i.x && player->bullet->x <= i.x + i.width) &&
+        (player->bullet->y >= i.y && player->bullet->y <= i.y + i.height);
       if (hit) {
         i.dead = true;
         score+=10;
-        player.bullet.reset();
+        player->bullet.reset();
         break;
       }
     }

@@ -40,7 +40,7 @@ Renderer::~Renderer() {
   SDL_Quit();
 }
 
-void Renderer::Render(Player const &player, std::vector <Invader> &invaders, int invader_move_counter, GAME_STATE game_state) {
+void Renderer::Render(std::unique_ptr<Player> &player, std::vector <Invader> &invaders, int invader_move_counter, GAME_STATE game_state) {
   // Clear screen
   SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E, 0xFF);
   SDL_RenderClear(sdl_renderer);
@@ -57,7 +57,7 @@ void Renderer::Render(Player const &player, std::vector <Invader> &invaders, int
 
   // Render player
   SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0xFF, 0x00, 0xFF);
-  RenderPixels(player.x, player.y, player.sprite_player_frame1, player.width);
+  RenderPixels(player->x, player->y, player->sprite_player_frame1, player->width);
 
   // Render invaders' fleet
   SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -68,13 +68,13 @@ void Renderer::Render(Player const &player, std::vector <Invader> &invaders, int
     RenderPixels(invader.x, invader.y, pixels, invader.width);
   }
 
-  if (player.bullet) {
+  if (player->bullet) {
     SDL_Rect block;
     block.w = block_width;
     block.h = block_height * 4;
 
-    block.x = player.bullet->x * block_width;
-    block.y = player.bullet->y * block_height;
+    block.x = player->bullet->x * block_width;
+    block.y = player->bullet->y * block_height;
 
     SDL_RenderFillRect(sdl_renderer, &block);
   }

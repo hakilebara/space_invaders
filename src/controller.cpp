@@ -1,7 +1,7 @@
 #include "controller.hpp"
 
 
-void Controller::HandleInput(bool &running, Player &player) {
+void Controller::HandleInput(bool &running, std::unique_ptr<Player> &player) {
   SDL_Event e;
   while (SDL_PollEvent(&e)) {
     switch (e.type) {
@@ -9,14 +9,14 @@ void Controller::HandleInput(bool &running, Player &player) {
         switch (e.key.keysym.sym) {
           case SDLK_LEFT:
             key_left_pressed = true;
-            player.velocity = -2;
+            player->velocity = -2;
             break;
           case SDLK_RIGHT:
             key_right_pressed = true;
-            player.velocity = 2;
+            player->velocity = 2;
             break;
           case SDLK_SPACE:
-            player.shoot();
+            player->shoot();
             break;
           default:
             break;
@@ -28,16 +28,16 @@ void Controller::HandleInput(bool &running, Player &player) {
           case SDLK_LEFT:
             key_left_pressed = false;
             if (!key_right_pressed)
-              player.velocity = 0;
+              player->velocity = 0;
             else
-              player.velocity = 2;
+              player->velocity = 2;
             break;
           case SDLK_RIGHT:
             key_right_pressed = false;
             if (!key_left_pressed)
-              player.velocity = 0;
+              player->velocity = 0;
             else
-              player.velocity = -2;
+              player->velocity = -2;
             break;
           default:
             break;

@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <vector>
+#include <memory>
 #include "SDL.h"
 #include "player.hpp"
 #include "invader.hpp"
@@ -26,7 +27,7 @@ class Game {
   private:
    const std::size_t grid_width;
    const std::size_t grid_height;
-   Player player;
+   std::unique_ptr<Player> player;
    std::vector <Invader> invaders;
    int invader_frame_counter = 0;
    int invader_move_counter = 0;
