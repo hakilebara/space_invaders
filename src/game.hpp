@@ -35,6 +35,7 @@ class Game {
    int score{0};
    GAME_STATE state = GAME_STATE::RUNNING;
    void Update();
+   Audio sound;
 };
 
 #endif

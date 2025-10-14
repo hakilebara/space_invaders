@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "renderer.hpp"
 #include "controller.hpp"
+#include "audio.hpp"
 
 
 Game::Game(std::size_t grid_width, std::size_t grid_height) :
@@ -113,6 +114,7 @@ void Game::Update() {
         i.dead = true;
         score+=10;
         player->bullet.reset();
+        sound.PlaySound("invaderkilled.wav");
         break;
       }
     }

@@ -13,7 +13,7 @@ Renderer::Renderer(const std::size_t screen_width,
       block_width(screen_width/grid_width),
       block_height(screen_height/grid_height) {
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
       std::cerr << "SDL could not initialize.\n";
       std::cerr << "SDL_Error: " << SDL_GetError() << "\n";
     }

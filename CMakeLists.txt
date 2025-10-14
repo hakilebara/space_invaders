@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_definitions(-std=c++17)
 
-set(CXX_FLAGS "-Wall")
+set(CXX_FLAGS "-Wall -pthread")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 
 project(SDL2Test)
@@ -14,6 +14,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS} src)
 
-add_executable(SpaceInvaders src/main.cpp src/game.cpp src/renderer.cpp src/controller.cpp src/ship.hpp src/player.hpp src/invader.hpp src/bullet.hpp)
+add_executable(SpaceInvaders src/main.cpp src/game.cpp src/renderer.cpp src/controller.cpp src/ship.hpp src/player.hpp src/invader.hpp src/bullet.hpp src/audio.cpp)
 string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
 target_link_libraries(SpaceInvaders ${SDL2_LIBRARIES})
