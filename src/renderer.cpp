@@ -21,7 +21,7 @@ Renderer::Renderer(const std::size_t screen_width,
     // Create window
     sdl_window = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, screen_width, screen_height, SDL_WINDOW_SHOWN);
-      
+
     if (nullptr == sdl_window) {
       std::cerr << "Window could not be creatd.\n";
       std::cerr << " SDL_Error: " << SDL_GetError() << "\n";
@@ -61,10 +61,17 @@ void Renderer::Render(std::unique_ptr<Player> &player, std::vector <Invader> &in
 
   // Render invaders' fleet
   SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+  // claw down
+  constexpr uint8_t const sprite_crab_frame1[INVADER_WIDTH]
+      = { 0x30, 0x18, 0x7D, 0xB6, 0xBC, 0x3C, 0xBC, 0xB6, 0x7D, 0x18, 0x30 };
+
+  // claw up
+  constexpr uint8_t const sprite_crab_frame2[INVADER_WIDTH]
+      = { 0x1E, 0xB8, 0x7D, 0x36, 0x3C, 0x3C, 0x3C, 0x36, 0x7D, 0xB8, 0x1E };
   for (Invader const &invader : invaders) {
     uint8_t const *pixels = (invader_move_counter % 2 == 0)
-      ? invader.sprite_crab_frame1
-      : invader.sprite_crab_frame2;
+      ? sprite_crab_frame1
+      : sprite_crab_frame2;
     RenderPixels(invader.x, invader.y, pixels, invader.width);
   }
 
@@ -82,7 +89,7 @@ void Renderer::Render(std::unique_ptr<Player> &player, std::vector <Invader> &in
   // Update Screen
   SDL_RenderPresent(sdl_renderer);
 }
-  
+
 void Renderer::UpdateWindowTitle(int score, int fps) {
   std::string title("Space Invaders Score: " + std::to_string(score) + " FPS: " + std::to_string(fps));
   SDL_SetWindowTitle(sdl_window, title.c_str());
