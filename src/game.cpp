@@ -103,7 +103,7 @@ void Game::Update() {
   if (player->bullet) {
     player->bullet->Move();
     if (player->bullet->y < 0) {
-      player->bullet.reset();
+      player->bullet = compat::nullopt;
     }
     for (Invader &i : invaders) {
       bool hit =
@@ -113,7 +113,7 @@ void Game::Update() {
       if (hit) {
         i.dead = true;
         score+=10;
-        player->bullet.reset();
+        player->bullet = compat::nullopt;
         sound.PlaySound("invaderkilled.wav");
         break;
       }
