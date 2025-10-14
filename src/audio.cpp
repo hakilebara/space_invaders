@@ -4,7 +4,9 @@
 Audio::Audio() {
   device = SDL_OpenAudioDevice(nullptr, 0, &spec, nullptr, 0);
   if (!device) {
-    throw std::runtime_error("Sound device error: " + std::string(SDL_GetError()));
+    // Display an error message rather than throwing and crashing the program
+    // if no sound device is detected, the game should play without sound
+    std::cout << "Sound device error: " << std::string(SDL_GetError()) << std::endl;
   }
   SDL_PauseAudioDevice(device, 0);
 
