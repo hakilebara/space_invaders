@@ -2,7 +2,7 @@
 #define SHIP_H
 
 #include "SDL.h"
-
+#include <cstddef>
 
 class Ship {
   public:
