@@ -9,7 +9,6 @@
 Game::Game(std::size_t grid_width, std::size_t grid_height) :
   grid_width(grid_width),
   grid_height(grid_height) {
-  // player(PLAYER_STARTING_X, grid_height - 2 * SHIP_HEIGHT) {
   player = std::make_unique<Player>(PLAYER_STARTING_X, grid_height - 2 * SHIP_HEIGHT);
   for (int row = 0; row < INVADER_ROWS; ++row) {
     float y = row * SHIP_HEIGHT * 1.5;

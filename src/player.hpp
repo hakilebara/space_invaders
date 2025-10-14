@@ -10,15 +10,15 @@
     // C++17 or later
     #include <optional>
     namespace compat {
-        using std::optional;
-	using std::nullopt;
+      using std::optional;
+	    using std::nullopt;
     }
 #else
-	// Udacity workspace, C++14 or earlier use experimental
+	// Udacity workspace, C++14 or earlier
     #include <experimental/optional>
     namespace compat {
-        using std::experimental::optional;
-	using std::experimental::nullopt;
+      using std::experimental::optional;
+	    using std::experimental::nullopt;
     }
 #endif
 
@@ -37,9 +37,7 @@ class Player : public Ship {
        bullet.emplace(x+6, y);
      }
    }
-   // Audio sound;
    uint8_t const sprite_player_frame1[PLAYER_WIDTH] = { 0xF0, 0xF8, 0xF8, 0xF8, 0xF8, 0xFE, 0xFF, 0xFE, 0xF8, 0xF8, 0xF8, 0xF8, 0xF0 };
-   //std::experimental::optional<Bullet> bullet;
    compat::optional<Bullet> bullet;
 
   private:

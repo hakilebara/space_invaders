@@ -47,8 +47,6 @@ void Audio::audioThreadFunc() {
       SDL_AudioSpec dummy{};
       uint32_t wavLength = 0;
 
-      std::cout << "Playing " << filepath << std::endl;
-
       if (SDL_LoadWAV(filepath.c_str(), &dummy, &wavBuffer, &wavLength) != nullptr) {
         SDL_QueueAudio(device, wavBuffer, wavLength);
         SDL_FreeWAV(wavBuffer);
