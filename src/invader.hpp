@@ -9,7 +9,7 @@ class Invader : public Ship {
   public:
     Invader(float x, float y) : Ship(x, y) {
       width = INVADER_WIDTH;
-      velocity = -5.0f;
+      velocity = 5.0f;
     }
     bool dead = false;
 };

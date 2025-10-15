@@ -10,7 +10,8 @@ Game::Game(std::size_t grid_width, std::size_t grid_height) :
   grid_width(grid_width),
   grid_height(grid_height) {
   player = std::make_unique<Player>(PLAYER_STARTING_X, grid_height - 2 * SHIP_HEIGHT);
-  for (int row = 0; row < INVADER_ROWS; ++row) {
+
+  for (int row = 1; row <= INVADER_ROWS; ++row) {
     float y = row * SHIP_HEIGHT * 1.5;
     for (float j = 0; j < INVADER_NB/INVADER_ROWS; ++j) {
       float x = j * INVADER_WIDTH * 1.3;
@@ -63,47 +64,30 @@ void Game::Run(Controller &controller, Renderer &renderer, std::size_t target_fr
   }
 }
 
- // flag used to stop invaders from moving left/right when they shift down
-bool dont_move = false;
 
 void Game::Update() {
   player->Move(grid_width);
 
-  if (invader_frame_counter % invader_frame_delay == 0) {
-    bool out_of_bound = std::any_of(invaders.begin(), invaders.end(),
-        [&](Invader i) { return i.x <= 0 || i.x >= grid_width - i.width; } );
+  Game::MoveInvaderFleet();
 
-    if (out_of_bound) {
-      if (!dont_move) {
-        for (Invader &i : invaders) {
-          i.y += SHIP_HEIGHT;
-          i.velocity *= -1; // Change invaders' direction by flipping their velocity sign
-         }
-         dont_move = true;
-      }
-      else {
-        dont_move = false;
-      }
-    }
-    if (!dont_move) {
-      for (Invader &i : invaders) {
-        i.Move(grid_width);
-      }
-      ++invader_move_counter;
-    }
-  }
-  ++invader_frame_counter;
+  bool player_hit = std::any_of(invaders.begin(), invaders.end(),
+      [&](const Invader& i) {
+        return i.y >= player->y;
+      });
 
-  bool player_hit = std::any_of(invaders.begin(), invaders.end(), [&](Invader i) { return i.y >= player->y; });
   if (player_hit) {
     state = GAME_STATE::LOST;
   }
 
   if (player->bullet) {
     player->bullet->Move();
+
+    // destroy the bullet when it goes out of the screen top boundary
     if (player->bullet->y < 0) {
       player->bullet = compat::nullopt;
     }
+
+    // collision detection
     for (Invader &i : invaders) {
       bool hit =
         !i.dead &&
@@ -120,8 +104,10 @@ void Game::Update() {
 
     invaders.erase(
       std::remove_if(invaders.begin(), invaders.end(),
-                     [](const Invader& i){ return i.dead; }),
-      invaders.end()
+         [](const Invader& i){
+           return i.dead;
+         }),
+         invaders.end()
     );
 
     if (invaders.empty()) {
@@ -129,4 +115,30 @@ void Game::Update() {
     }
   }
 }
+
+void Game::MoveInvaderFleet() {
+  // Check if any invaders is out of the bounds of the screen
+  if (invader_frame_counter % invader_frame_delay == 0) {
+    bool out_of_bound = std::any_of(invaders.begin(), invaders.end(),
+        [&](const Invader& i) {
+          return (i.velocity < 0 && i.x <= 0) || (i.velocity > 0 && i.x + i.width >= grid_width);
+        });
+
+    if (out_of_bound) {
+      // Move the entire invader fleet in the opposite direction
+      for (Invader &i : invaders) {
+        i.y += SHIP_HEIGHT;
+        i.velocity *= -1;
+      }
+    }
+    else {
+      for (Invader &i : invaders) {
+        i.Move(grid_width);
+      }
+      ++invader_move_counter;
+    }
+  }
+  ++invader_frame_counter;
+}
+
 int Game::GetScore() const { return score; }
