@@ -30,5 +30,6 @@ class Renderer {
 
    void RenderPixels(int x, int y, uint8_t const *pixels, std::size_t size);
    void RenderGameOver();
+   void RenderInvaderFleet(std::vector<Invader>&invaders, int invader_move_counter);
 };
 #endif

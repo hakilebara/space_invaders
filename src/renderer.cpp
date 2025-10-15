@@ -40,7 +40,8 @@ Renderer::~Renderer() {
   SDL_Quit();
 }
 
-void Renderer::Render(std::unique_ptr<Player> &player, std::vector <Invader> &invaders, int invader_move_counter, GAME_STATE game_state) {
+void Renderer::Render(std::unique_ptr<Player> &player, std::vector <Invader>
+    &invaders, int invader_move_counter, GAME_STATE game_state) {
   // Clear screen
   SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E, 0xFF);
   SDL_RenderClear(sdl_renderer);
@@ -59,22 +60,9 @@ void Renderer::Render(std::unique_ptr<Player> &player, std::vector <Invader> &in
   SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0xFF, 0x00, 0xFF);
   RenderPixels(player->x, player->y, player->sprite_player_frame1, player->width);
 
-  // Render invaders' fleet
-  SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-  // claw down
-  constexpr uint8_t const sprite_crab_frame1[INVADER_WIDTH]
-      = { 0x30, 0x18, 0x7D, 0xB6, 0xBC, 0x3C, 0xBC, 0xB6, 0x7D, 0x18, 0x30 };
+  RenderInvaderFleet(invaders, invader_move_counter);
 
-  // claw up
-  constexpr uint8_t const sprite_crab_frame2[INVADER_WIDTH]
-      = { 0x1E, 0xB8, 0x7D, 0x36, 0x3C, 0x3C, 0x3C, 0x36, 0x7D, 0xB8, 0x1E };
-  for (Invader const &invader : invaders) {
-    uint8_t const *pixels = (invader_move_counter % 2 == 0)
-      ? sprite_crab_frame1
-      : sprite_crab_frame2;
-    RenderPixels(invader.x, invader.y, pixels, invader.width);
-  }
-
+  // Render bullet
   if (player->bullet) {
     SDL_Rect block;
     block.w = block_width;
@@ -94,6 +82,26 @@ void Renderer::UpdateWindowTitle(int score, int fps) {
   std::string title("Space Invaders Score: " + std::to_string(score) + " FPS: " + std::to_string(fps));
   SDL_SetWindowTitle(sdl_window, title.c_str());
 }
+
+void Renderer::RenderInvaderFleet(std::vector<Invader>&invaders, int invader_move_counter) {
+  SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
+  // pixel sprite frame: crab invader claw down
+  constexpr uint8_t const sprite_crab_frame1[INVADER_WIDTH] =
+  { 0x30, 0x18, 0x7D, 0xB6, 0xBC, 0x3C, 0xBC, 0xB6, 0x7D, 0x18, 0x30 };
+  // pixel sprite frame: crab invader claw up
+  constexpr uint8_t const sprite_crab_frame2[INVADER_WIDTH] =
+  { 0x1E, 0xB8, 0x7D, 0x36, 0x3C, 0x3C, 0x3C, 0x36, 0x7D, 0xB8, 0x1E };
+
+  for (Invader const &invader : invaders) {
+    uint8_t const *pixels = (invader_move_counter % 2 == 0)
+      ? sprite_crab_frame1
+      : sprite_crab_frame2;
+    RenderPixels(invader.x, invader.y, pixels, invader.width);
+  }
+
+}
+
 
 void Renderer::RenderGameOver() {
     uint8_t const g[8] = { 0x00, 0x3C, 0x42, 0x82, 0x92, 0x72, 0x00, 0x00 };
